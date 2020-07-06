@@ -18,15 +18,17 @@
             <th>Date</th>
             <th>Actions</th>
         </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-                <a href="">Delete</a>
-            </td>
-        </tr>
+        {% for job in jobs %}
+            <tr>
+                <td>{{ job.title }}</td>
+                <td>{{ job.company }}</td>
+                <td>{{ job.url }}</td>
+                <td>{{ job.date_created.date() }}</td>
+                <td>
+                    <a href="/delete/{{ job.id }}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
     </table>
     <!--    <form action="/" method = "POST">
         <input type="text" name="content" id="content">

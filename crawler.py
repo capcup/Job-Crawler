@@ -1,3 +1,4 @@
+from app import Jobs as Jobs
 
 class JobCrawler: 
 
@@ -15,8 +16,19 @@ class JobCrawler:
     def write_file(self):
         # add date to filename
         pass 
-    
 
+def addJobs():
+    title = 'Junior Softwareentwickler'
+    new_jobs = Jobs(title=title)
+    try:
+        db.session.add(new_jobs)
+        db.session.commit()
+        return redirect('/')
+    except: 
+        return 'There was an issue adding a job'
+
+if __name__ == "__main__":
+    addJobs()
 
 '''
 headers = {
