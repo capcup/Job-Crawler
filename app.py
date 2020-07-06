@@ -38,14 +38,17 @@ def index():
         job_company = request.form['company']
         job_url = request.form['url']
 
-        new_job = Jobs(title=job_title, company=job_company, url=job_url)
+        if job_title or job_company or job_url: 
+            new_job = Jobs(title=job_title, company=job_company, url=job_url)
+            try: 
+                db.session.add(new_job)
+                db.session.commit()
+                return redirect('/')
 
-        try: 
-            db.session.add(new_job)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue adding a new job'
+            except:
+                return 'There was an issue adding a new job'
+        else: 
+            return render_template('index.html', jobs = jobs)
     else:
         return render_template('index.html', jobs = jobs)
 
