@@ -31,11 +31,23 @@ def addJobs():
         return 'There was an issue adding a job'
 
 @app.route('/', methods=['POST', 'GET'])
-
 def index():
     jobs = Jobs.query.order_by(Jobs.date_created).all()
-    print(jobs)
-    return render_template('index.html', jobs = jobs)
+    if request.method == 'POST':
+        job_title = request.form['title']
+        job_company = request.form['company']
+        job_url = request.form['url']
+
+        new_job = Jobs(title=job_title, company=job_company, url=job_url)
+
+        try: 
+            db.session.add(new_job)
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue adding a new job'
+    else:
+        return render_template('index.html', jobs = jobs)
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -47,6 +59,25 @@ def delete(id):
         return redirect('/')
     except:
         return 'There was a problem deleting that task'
+
+
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+    job = Jobs.query.get_or_404(id)
+
+    if request.method == 'POST':
+        job.title = request.form['title']
+        job.company = request.form['company']        
+        job.url = request.form['url']       
+
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue updating the job'
+    else:
+        return render_template('update.html', job=job)
+
 
 if __name__=="__main__":
     # addJobs()
