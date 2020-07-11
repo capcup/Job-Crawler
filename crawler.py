@@ -11,7 +11,6 @@ class Job_Crawler:
     company = 'stepstone'
 
     url = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&qs=%5B%5D&companyID=0&cityID=0&sourceOfTheSearchField=homepagemex%3Ageneral&searchOrigin=Homepage_top-search&ke=Junior-Softwareentwickler%2Fin&ws=Weinheim&ra=30&rsearch=1'
-    url2 = 'https://www.youtube.com/watch?v=mPymRFeTJa4'
     url3 = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&companyid=0&sourceofthesearchfield=resultlistpage%3Ageneral&qs=%5B%5D&ke=Junior-Softwareentwickler%2Fin&ws=Frankfurt&ra=30&suid=7e813f1f-841f-4390-aad1-b40ad8cd5bb4&of=50&action=paging_next'
     url4 = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&companyid=0&sourceofthesearchfield=resultlistpage%3Ageneral&qs=%5B%5D&ke=Junior-Softwareentwickler%2Fin&ws=Frankfurt&ra=30&suid=7e813f1f-841f-4390-aad1-b40ad8cd5bb4&of=75&action=paging_next'
 
@@ -40,11 +39,6 @@ class Job_Crawler:
 
         job_informations = zip(title, companies, job_link)
         self.add_Jobs(job_informations)
-        
-
-    def write_file(self):
-        # add date to filename
-        pass 
 
 
     def add_Jobs(self, job_informations):
