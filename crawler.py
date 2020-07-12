@@ -5,24 +5,14 @@ from configparser import ConfigParser
 
 class Job_Crawler: 
 
-    platform = 'stepstone'
-
     url = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&qs=%5B%5D&companyID=0&cityID=0&sourceOfTheSearchField=homepagemex%3Ageneral&searchOrigin=Homepage_top-search&ke=Junior-Softwareentwickler%2Fin&ws=Weinheim&ra=30&rsearch=1'
-    url3 = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&companyid=0&sourceofthesearchfield=resultlistpage%3Ageneral&qs=%5B%5D&ke=Junior-Softwareentwickler%2Fin&ws=Frankfurt&ra=30&suid=7e813f1f-841f-4390-aad1-b40ad8cd5bb4&of=50&action=paging_next'
-    url4 = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&companyid=0&sourceofthesearchfield=resultlistpage%3Ageneral&qs=%5B%5D&ke=Junior-Softwareentwickler%2Fin&ws=Frankfurt&ra=30&suid=7e813f1f-841f-4390-aad1-b40ad8cd5bb4&of=75&action=paging_next'
+    platform = ''
 
     def __init__(self):
         self.config_object = ConfigParser()
         self.config_object.read("config.ini")
-
-        self.title_class = ''
-        self.company_class = ''
-        self.link_class = ''
-
-        '''
-        - dynamische Deklaration und Initialisierung der platform-variablen 
-        - 
-        '''        
+        self.extract_platform()
+        self.set_platform_informations()
 
 
     def crawl_data(self):
@@ -32,17 +22,15 @@ class Job_Crawler:
             'Accept-Encoding':'gzip, deflate, br',
             'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
             }
-            
         try:
             source_code = requests.get(self.url, headers=headers).text
             soup = BeautifulSoup(source_code, 'lxml')
         except:
             print('URL error')        
-
         
-        title = soup.findAll('h2', {"class": self.stepstone_title_h2_class})        
-        companies = soup.findAll('div', {"class": self.stepstone_company_div_class})
-        job_link = soup.findAll('a', {'class': self.stepstone_link_a_class})
+        title = soup.findAll(self.title_tag, {"class": self.title_class})        
+        companies = soup.findAll(self.company_tag, {"class": self.company_class})
+        job_link = soup.findAll(self.link_tag, {'class': self.link_class})
 
         job_informations = zip(title, companies, job_link)
         self.add_Jobs(job_informations)
@@ -69,10 +57,26 @@ class Job_Crawler:
         except:
             return 'Issue by commiting the new Jobs in the database'
             
-    def extract_platform_informations(self):
-        pass 
-        # strip by '_'
+    def extract_platform(self):
+        self.platforms = [x.strip() for x in self.config_object['platforms']['platforms'].split(',')]
+
+        for platform in self.platforms:
+            if platform in self.url:
+                self.platform = platform
         # e.g. title_tag & title_class
+
+    def set_platform_informations(self):
+        title, company, link = self.config_object[self.platform]
+
+        self.title_tag = title.split('_')[1]
+        self.company_tag = company.split('_')[1]
+        self.link_tag = link.split('_')[1]
+
+        self.title_class = self.config_object[self.platform][title]
+        self.company_class = self.config_object[self.platform][company]
+        self.link_class =  self.config_object[self.platform][link]
+ 
+        
 
     def delete_alljobs(self):
         db.session.query(Jobs).delete()
@@ -81,16 +85,8 @@ class Job_Crawler:
 
 if __name__ == "__main__":
 
-    # To-Do: embed config.ini - extract_platform_informations
     job_crawler = Job_Crawler()
-    #job_crawler.config_object.read("config.ini")
-    print(job_crawler.config_object["stepstone"]["title_h2_class"])
 
-    title, company, link = job_crawler.config_object["stepstone"]
-    # printing out the keys
-    print(title, company, link)
-
-    '''
-    job_crawler.delete_alljobs()
+    # job_crawler.delete_alljobs()
     job_crawler.crawl_data()
-    '''
+    

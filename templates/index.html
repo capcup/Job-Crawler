@@ -22,8 +22,8 @@
         </thead>
         {% for job in jobs %}
         <tr>
-            <td>{{ job.title }}</td>
-            <td>{{ job.company }}</td>
+            <td style="font-family: 'Roboto Slab', serif;">{{ job.title }}</td>
+            <td style="font-family: 'Roboto Slab', serif;">{{ job.company }}</td>
             <td><a href={{ job.url }}>Link</a></td>
             <td>{{ job.date_created.date() }}</td>
             <td>
