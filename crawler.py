@@ -5,8 +5,8 @@ from configparser import ConfigParser
 
 class Job_Crawler: 
 
-    url = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&qs=%5B%5D&companyID=0&cityID=0&sourceOfTheSearchField=homepagemex%3Ageneral&searchOrigin=Homepage_top-search&ke=Junior-Softwareentwickler%2Fin&ws=Weinheim&ra=30&rsearch=1'
-    platform = ''
+    url = 'https://www.stepstone.de/5/ergebnisliste.html?stf=freeText&ns=1&companyid=0&sourceofthesearchfield=homepagemex%3Ageneral&rsearch=1&qs=%5B%5D&ke=Junior-Softwareentwickler%2Fin&ws=Weinheim&ra=30&suid=70c82d15-19d7-419a-a3a5-1181c5825d19&of=0&action=paging_prev'
+
 
     def __init__(self):
         self.config_object = ConfigParser()
@@ -42,6 +42,8 @@ class Job_Crawler:
         for title in job_informations:
             title, company, url = title
 
+            if not self.filter_job(title.text):
+                continue
             title = title.text
             company = company.text
             if self.platform == 'stepstone':
@@ -76,7 +78,13 @@ class Job_Crawler:
         self.company_class = self.config_object[self.platform][company]
         self.link_class =  self.config_object[self.platform][link]
  
-        
+        self.keywords = [x.strip().lower() for x in self.config_object['platforms']['keywords'].split(',')]
+
+    def filter_job(self, title: str):
+        for keyword in self.keywords:
+            if keyword in title.lower():
+                return True
+        return False
 
     def delete_alljobs(self):
         db.session.query(Jobs).delete()
@@ -87,6 +95,7 @@ if __name__ == "__main__":
 
     job_crawler = Job_Crawler()
 
+   
     # job_crawler.delete_alljobs()
     job_crawler.crawl_data()
     

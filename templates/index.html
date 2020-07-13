@@ -27,9 +27,11 @@
             <td><a href={{ job.url }}>Link</a></td>
             <td>{{ job.date_created.date() }}</td>
             <td>
-                <a href="/delete/{{ job.id }}">Delete</a>
+                <a href="/filter/{{ job.id }}">Filter</a>
                 <br>
                 <a href="/update/{{ job.id }}">Update</a>
+                <br>
+                <a href="/delete/{{ job.id }}">Delete</a>
             </td>
         </tr>
         {% endfor %}

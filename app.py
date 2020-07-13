@@ -6,15 +6,12 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
-# Submit AJAX Forms with jquery: https://www.youtube.com/watch?v=IZWtHsM3Y5A
-# Flask: https://youtu.be/Z1RJmh_OqeA?t=1837
-
-
 class Jobs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     company = db.Column(db.String(50), default='unknown')
     url = db.Column(db.String(2000), default='unknown')
+    filtered = db.Column(db.Boolean, default=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -32,7 +29,9 @@ def addJobs():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    jobs = Jobs.query.order_by(Jobs.date_created).all()
+    jobs = Jobs.query.filter_by(filtered=True).order_by(Jobs.date_created).all()
+    # jobs = Jobs.query.order_by(Jobs.date_created).all()
+    
     if request.method == 'POST':
         job_title = request.form['title']
         job_company = request.form['company']
@@ -54,14 +53,25 @@ def index():
 
 @app.route('/delete/<int:id>')
 def delete(id):
-    job_to_delete = Jobs.query.get_or_404(id)
+    deleted_job = Jobs.query.get_or_404(id)
 
     try: 
-        db.session.delete(job_to_delete)
+        db.session.delete(deleted_job)
         db.session.commit()
         return redirect('/')
     except:
-        return 'There was a problem deleting that task'
+        return 'There was a problem deleting that job'
+
+@app.route('/filter/<int:id>')
+def filter(id):
+    filtered_job = Jobs.query.get_or_404(id)
+    try: 
+        filtered_job.filtered = not filtered_job.filtered
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was a problem filtering that job'
+
 
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
@@ -83,7 +93,6 @@ def update(id):
 
 
 if __name__=="__main__":
-    # addJobs()
     app.run(debug=True)
 
 
