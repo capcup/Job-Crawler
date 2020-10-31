@@ -97,5 +97,5 @@ if __name__ == "__main__":
 
    
     # job_crawler.delete_alljobs()
-    job_crawler.crawl_data()
+    # job_crawler.crawl_data()
     
